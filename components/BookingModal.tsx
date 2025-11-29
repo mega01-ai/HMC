@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, CheckCircle } from 'lucide-react';
+import { X, Calendar, Clock, CheckCircle, MessageCircle } from 'lucide-react';
 import { Doctor } from '../types';
 
 interface BookingModalProps {
@@ -17,13 +17,33 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
     notes: ''
   });
 
+  const generateWhatsAppLink = () => {
+    const message = encodeURIComponent(
+      `*طلب حجز موعد جديد* 🏥\n\n` +
+      `👤 *الاسم:* ${formData.name}\n` +
+      `📱 *الهاتف:* ${formData.phone}\n` +
+      `👨‍⚕️ *الدكتور:* ${doctor.name} (${doctor.specialty})\n` +
+      `📅 *التاريخ:* ${formData.date}\n` +
+      `⏰ *الوقت:* ${formData.time}\n` +
+      `📝 *ملاحظات:* ${formData.notes || 'لا يوجد'}`
+    );
+    // Updated WhatsApp number
+    return `https://wa.me/201148497474?text=${message}`;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call
+    setStep(2); // Loading
+    
+    // Simulate processing time then go to success
     setTimeout(() => {
       setStep(3);
-    }, 1000);
-    setStep(2); // Loading state if needed, jumping to success for demo
+    }, 1500);
+  };
+
+  const handleConfirmViaWhatsApp = () => {
+    window.open(generateWhatsAppLink(), '_blank');
+    onClose();
   };
 
   return (
@@ -120,7 +140,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
                 type="submit"
                 className="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-lg shadow-primary-900/30 transition-all transform active:scale-[0.98]"
               >
-                تأكيد الحجز
+                متابعة الحجز
               </button>
             </form>
           )}
@@ -128,26 +148,35 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
           {step === 2 && (
              <div className="flex flex-col items-center justify-center py-12 space-y-6">
                 <div className="w-12 h-12 border-4 border-primary-900/50 border-t-primary-500 rounded-full animate-spin"></div>
-                <p className="text-gray-400">جاري معالجة طلبك...</p>
+                <p className="text-gray-400">جاري تحضير تفاصيل الحجز...</p>
              </div>
           )}
 
           {step === 3 && (
             <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center animate-in zoom-in-50 duration-300">
               <div className="w-20 h-20 bg-green-900/30 rounded-full flex items-center justify-center mb-2">
-                <CheckCircle className="w-10 h-10 text-green-500" />
+                <MessageCircle className="w-10 h-10 text-green-500" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">تم الحجز بنجاح!</h3>
-                <p className="text-gray-400 max-w-xs mx-auto">
-                  شكراً لك {formData.name}. تم حجز موعدك مع {doctor.name} يوم {formData.date} الساعة {formData.time}.
+                <h3 className="text-2xl font-bold text-white mb-2">الخطوة الأخيرة</h3>
+                <p className="text-gray-400 max-w-xs mx-auto mb-4">
+                  تم تسجيل البيانات مبدئياً. لإتمام الحجز وتأكيده، يرجى إرسال التفاصيل إلينا عبر واتساب.
                 </p>
               </div>
+              
+              <button 
+                onClick={handleConfirmViaWhatsApp}
+                className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-xl shadow-lg transition-all transform hover:-translate-y-1"
+              >
+                <MessageCircle size={20} />
+                تأكيد الحجز عبر واتساب
+              </button>
+              
               <button 
                 onClick={onClose}
-                className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold rounded-xl transition"
+                className="text-gray-500 hover:text-gray-300 text-sm font-medium transition"
               >
-                إغلاق
+                إلغاء
               </button>
             </div>
           )}

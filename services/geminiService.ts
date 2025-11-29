@@ -54,18 +54,17 @@ const initializeChat = () => {
     أنت المساعد الذكي لمجمع هنا الطبي (HMC).
     
     الهدف:
-    مساعدة المرضى في حجز المواعيد والرد على استفساراتهم. لديك القدرة على حجز المواعيد فعلياً باستخدام أداة "bookAppointment".
+    مساعدة المرضى في حجز المواعيد والرد على استفساراتهم.
 
     قائمة الأطباء وبياناتهم:
     ${doctorsContext}
 
     قواعد العمل:
     1. تحدث باللغة العربية بأسلوب مهذب واحترافي.
-    2. لحجز موعد، يجب أن تحصل من المستخدم على المعلومات التالية: (الاسم، رقم الهاتف، الطبيب، التاريخ، الوقت).
-    3. إذا طلب المستخدم حجز موعد، اسأله عن البيانات الناقصة خطوة بخطوة أو معاً.
-    4. بمجرد توفر جميع البيانات، قم باستدعاء الدالة "bookAppointment" فوراً ولا تخبر المستخدم أنك ستحجز، بل احجز مباشرة.
+    2. لحجز موعد، اجمع البيانات التالية: (الاسم، رقم الهاتف، الطبيب، التاريخ، الوقت).
+    3. بمجرد توفر البيانات، استدع الدالة "bookAppointment".
+    4. ملاحظة هامة: بعد استدعاء الدالة، سيقوم النظام بإنشاء رابط واتساب. أخبر المستخدم: "لقد جهزت لك رابط الحجز، يرجى الضغط عليه لإرسال التفاصيل للعيادة عبر واتساب."
     5. إذا سأل المريض عن تشخيص، قل: "أنا مساعد ذكي ولا يمكنني تقديم تشخيص طبي دقيق. أنصحك بحجز موعد مع الطبيب المختص."
-    6. التواريخ: افهم مصطلحات "اليوم" و"غداً" وحولها لتاريخ تقريبي أو اقبلها كما هي.
   `;
 
   return ai.chats.create({
@@ -77,15 +76,28 @@ const initializeChat = () => {
   });
 };
 
-// Mock function to simulate booking execution on the client side
+// Mock function that returns a WhatsApp Link instead of a fake ID
 const executeBooking = async (args: any) => {
   console.log("Booking Request Received:", args);
-  // In a real app, this would be an API call to your backend
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500)); 
+  
+  const message = encodeURIComponent(
+      `*حجز موعد عبر المساعد الذكي* 🤖\n\n` +
+      `👤 *الاسم:* ${args.patientName}\n` +
+      `📱 *الهاتف:* ${args.phoneNumber}\n` +
+      `👨‍⚕️ *الدكتور:* ${args.doctorName}\n` +
+      `📅 *التاريخ:* ${args.date}\n` +
+      `⏰ *الوقت:* ${args.time}`
+    );
+  
+  // Updated WhatsApp number
+  const whatsappLink = `https://wa.me/201148497474?text=${message}`;
+
   return {
-    status: 'success',
-    bookingId: Math.floor(Math.random() * 10000),
-    message: `تم تأكيد الحجز بنجاح للمريض ${args.patientName} مع ${args.doctorName} في ${args.date} الساعة ${args.time}.`
+    status: 'pending_confirmation',
+    action: 'open_whatsapp',
+    link: whatsappLink,
+    message: `رائع! لتوكيد الحجز، يرجى إرسال هذه البيانات عبر واتساب من خلال هذا الرابط: ${whatsappLink}`
   };
 };
 
@@ -99,23 +111,16 @@ export const sendMessageToGemini = async (message: string): Promise<AsyncGenerat
   }
 
   try {
-    // We send the user message. We act on the response to see if it's a tool call or text.
     let response = await chatSession.sendMessage({ message });
     
-    // Check for Function Calls
     const functionCalls = response.functionCalls;
     
     if (functionCalls && functionCalls.length > 0) {
-        // Handle the function call
         const call = functionCalls[0];
         if (call.name === 'bookAppointment') {
-            // Yield a temporary message to the UI (optional, but good UX)
-            // yield "جاري تأكيد الحجز..."; 
-            
-            // Execute the function
             const result = await executeBooking(call.args);
             
-            // Send the result back to Gemini
+            // Send the result back to Gemini so it can incorporate the link in its text
             response = await chatSession.sendToolResponse({
                 functionResponses: [{
                     id: call.id,
@@ -126,15 +131,12 @@ export const sendMessageToGemini = async (message: string): Promise<AsyncGenerat
         }
     }
 
-    // Create a generator to yield the final text
     async function* streamGenerator() {
       if (response.text) {
-        // Simple simulation of streaming for the final block of text
-        // since we used sendMessage (blocking) to handle tools easily.
         const words = response.text.split(' ');
         for (const word of words) {
             yield word + ' ';
-            await new Promise(r => setTimeout(r, 20)); // tiny delay for effect
+            await new Promise(r => setTimeout(r, 10));
         }
       }
     }
@@ -143,7 +145,6 @@ export const sendMessageToGemini = async (message: string): Promise<AsyncGenerat
 
   } catch (error) {
     console.error("Error communicating with Gemini:", error);
-    // Reset session on error just in case
     chatSession = null;
     throw error;
   }

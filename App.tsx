@@ -215,7 +215,7 @@ function App() {
                 <div className="relative animate-in slide-in-from-left-10 duration-1000">
                   <div className="absolute inset-0 bg-primary-600 rounded-[3rem] rotate-3 opacity-10 blur-3xl"></div>
                   <img 
-                    src="https://archive.org/download/1764392388981/__ia_thumb.jpg" 
+                    src="https://archive.org/download/1764392388981/1764392388981.jpg" 
                     alt="Happy People" 
                     className="relative rounded-[2.5rem] shadow-2xl w-full object-cover h-[400px] lg:h-[500px]"
                   />
@@ -393,7 +393,7 @@ function App() {
                               </div>
                               <div>
                                  <p className="text-sm text-primary-200">رقم الهاتف</p>
-                                 <p className="font-bold font-mono text-lg" dir="ltr">+20 10 1234 5678</p>
+                                 <p className="font-bold font-mono text-lg" dir="ltr">+20 11 4849 7474</p>
                               </div>
                            </div>
                            <div className="flex items-center gap-4">
@@ -478,7 +478,7 @@ function App() {
             <ul className="space-y-2 text-sm">
               <li>القاهرة، مدينة الشروق، مصر</li>
               <li dir="ltr">info@hmc.eg</li>
-              <li dir="ltr">+20 10 1234 5678</li>
+              <li dir="ltr">+20 11 4849 7474</li>
             </ul>
           </div>
         </div>
