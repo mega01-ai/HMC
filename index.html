@@ -2,11 +2,16 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#030712" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>مجمع هنا الطبي | HMC</title>
+    <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="https://archive.org/download/334212488-896143051604337-7847414107783077968-n-removebg-preview/334212488_896143051604337_7847414107783077968_n-removebg-preview.png">
+    <link rel="apple-touch-icon" href="https://archive.org/download/334212488-896143051604337-7847414107783077968-n-removebg-preview/334212488_896143051604337_7847414107783077968_n-removebg-preview.png">
     <script>
       tailwind.config = {
         theme: {
@@ -18,10 +23,15 @@
               primary: {
                 50: '#eff6ff',
                 100: '#dbeafe',
+                200: '#bfdbfe',
+                300: '#93c5fd',
+                400: '#60a5fa',
                 500: '#3b82f6',
                 600: '#2563eb',
                 700: '#1d4ed8',
+                800: '#1e40af',
                 900: '#1e3a8a',
+                950: '#172554',
               },
               secondary: {
                 500: '#14b8a6',
@@ -57,7 +67,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-800">
+  <body class="bg-gray-950 text-gray-100 selection:bg-primary-500 selection:text-white">
     <div id="root"></div>
   </body>
 </html>

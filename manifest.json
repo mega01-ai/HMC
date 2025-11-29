@@ -1,0 +1,20 @@
+{
+  "short_name": "HMC",
+  "name": "مجمع هنا الطبي",
+  "icons": [
+    {
+      "src": "https://archive.org/download/334212488-896143051604337-7847414107783077968-n-removebg-preview/334212488_896143051604337_7847414107783077968_n-removebg-preview.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://archive.org/download/334212488-896143051604337-7847414107783077968-n-removebg-preview/334212488_896143051604337_7847414107783077968_n-removebg-preview.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#030712"
+}
